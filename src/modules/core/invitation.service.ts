@@ -17,6 +17,7 @@ export class InvitationService {
         role: OrganizationRole;
         invitedById: string;
         eventId?: string;
+        skipEmail?: boolean;
     }) {
         // 1. Generate secure token
         const token = crypto.randomBytes(32).toString("hex");
@@ -45,17 +46,25 @@ export class InvitationService {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
         const inviteLink = `${baseUrl}/accept-invite?token=${token}`;
 
-        // 5. Send email
-        const emailResult = await sendInvitationEmail(
-            email,
-            inviteLink,
-            invitation.organization.name
-        );
+        // 5. Send email (optional)
+        let emailSent = false;
+        let emailError = undefined;
+
+        if (!skipEmail) {
+            const emailResult = await sendInvitationEmail(
+                email,
+                inviteLink,
+                invitation.organization.name
+            );
+            emailSent = !emailResult.error;
+            emailError = emailResult.error;
+        }
 
         return {
             invitation,
-            emailSent: !emailResult.error,
-            emailError: emailResult.error
+            emailSent,
+            emailError,
+            inviteLink // Return for immediate use if needed
         };
     }
 }

@@ -1,12 +1,18 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendValue = process.env.RESEND_API_KEY;
+const resend = resendValue ? new Resend(resendValue) : null;
 
 export async function sendInvitationEmail(
   to: string,
   inviteLink: string,
   organizationName: string
 ) {
+  if (!resend) {
+    console.warn('Email service not configured (RESEND_API_KEY missing). Skipping email.');
+    return { error: 'Email service not configured' };
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'UTSAV <onboarding@resend.dev>', // change later when domain verified

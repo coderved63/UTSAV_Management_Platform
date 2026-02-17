@@ -19,6 +19,7 @@ export default function InviteMemberModal({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedEventId, setSelectedEventId] = useState<string>("");
+    const [skipEmail, setSkipEmail] = useState(true); // Default to true for faster bypass
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -33,7 +34,8 @@ export default function InviteMemberModal({
             organizationId,
             email,
             role,
-            eventId: selectedEventId || undefined
+            eventId: selectedEventId || undefined,
+            skipEmail
         });
 
         if (result.success) {
@@ -105,6 +107,19 @@ export default function InviteMemberModal({
                                 </select>
                             </div>
                         )}
+
+                        <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <input
+                                type="checkbox"
+                                id="skipEmail"
+                                checked={skipEmail}
+                                onChange={(e) => setSkipEmail(e.target.checked)}
+                                className="w-4 h-4 rounded border-slate-300 text-saffron-600 focus:ring-saffron-500"
+                            />
+                            <Label htmlFor="skipEmail" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer select-none">
+                                Skip Email & Generate Link Only (Fastest)
+                            </Label>
+                        </div>
 
                         {error && (
                             <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold border border-red-100 italic">

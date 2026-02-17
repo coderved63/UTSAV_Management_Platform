@@ -10,6 +10,7 @@ import InviteMemberModal from "@/components/dashboard/members/InviteMemberModal"
 import RoleBadge from "@/components/dashboard/members/RoleBadge";
 import MemberActions from "@/components/dashboard/members/MemberActions";
 import CopyInviteLink from "@/components/dashboard/members/CopyInviteLink";
+import ShareOnWhatsApp from "@/components/dashboard/members/ShareOnWhatsApp";
 import RevokeInviteButton from "@/components/dashboard/members/RevokeInviteButton";
 
 export default async function MembersPage({ params }: { params: { orgSlug: string } }) {
@@ -179,6 +180,11 @@ export default async function MembersPage({ params }: { params: { orgSlug: strin
                                             </td>
                                             {isAdmin && (
                                                 <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
+                                                    <ShareOnWhatsApp
+                                                        token={invite.token}
+                                                        orgName={organization.name}
+                                                        role={invite.role}
+                                                    />
                                                     <CopyInviteLink token={invite.token} />
                                                     <RevokeInviteButton
                                                         invitationId={invite.id}

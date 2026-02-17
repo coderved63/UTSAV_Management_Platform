@@ -13,6 +13,7 @@ const InviteMemberSchema = z.object({
     email: z.string().email("Invalid email address"),
     role: z.nativeEnum(OrganizationRole),
     eventId: z.string().optional(),
+    skipEmail: z.boolean().default(false),
 });
 
 export async function inviteMemberAction(data: z.infer<typeof InviteMemberSchema>) {
@@ -51,6 +52,7 @@ export async function inviteMemberAction(data: z.infer<typeof InviteMemberSchema
             role: validated.role,
             invitedById: member.id,
             eventId: validated.eventId,
+            skipEmail: validated.skipEmail,
         });
 
         revalidatePath(`/[orgSlug]/dashboard/members`, "page");
