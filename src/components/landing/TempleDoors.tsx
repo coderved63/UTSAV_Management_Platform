@@ -7,18 +7,13 @@ interface TempleDoorsProps {
 }
 
 export default function TempleDoors({ isOpen }: TempleDoorsProps) {
-    const doorTransition = {
-        duration: 1.5,
-        ease: [0.76, 0, 0.24, 1], // Custom bezier for heavy door feel
-    };
-
     return (
         <div className="absolute inset-0 z-20 flex pointer-events-none overflow-hidden">
             {/* Left Door */}
             <motion.div
                 initial={{ x: 0 }}
                 animate={{ x: isOpen ? "-100%" : 0 }}
-                transition={doorTransition}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
                 className="w-1/2 h-full bg-[#0F172A] relative border-r border-saffron-500/20 flex items-center justify-end"
             >
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
@@ -44,7 +39,7 @@ export default function TempleDoors({ isOpen }: TempleDoorsProps) {
             <motion.div
                 initial={{ x: 0 }}
                 animate={{ x: isOpen ? "100%" : 0 }}
-                transition={doorTransition}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
                 className="w-1/2 h-full bg-[#0F172A] relative border-l border-saffron-500/20 flex items-center justify-start"
             >
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />

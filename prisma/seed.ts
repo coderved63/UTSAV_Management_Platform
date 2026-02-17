@@ -1,4 +1,4 @@
-import { PrismaClient, FestivalRole, ExpenseStatus, DonationCategory, ExpenseCategory, BhogStatus } from "@prisma/client";
+import { PrismaClient, OrganizationRole, ExpenseStatus, DonationCategory, ExpenseCategory, BhogStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -15,33 +15,34 @@ async function main() {
         },
     });
 
-    // 2. Create Festival
-    const festival = await prisma.festival.upsert({
+    // 2. Create Organization
+    const organization = await prisma.organization.upsert({
         where: { slug: "ganeshotsav-2026" },
         update: {},
         create: {
             name: "Ganeshotsav 2026",
             slug: "ganeshotsav-2026",
             description: "Grand annual Ganeshotsav celebration for the community.",
+            type: "FESTIVAL",
             budgetTarget: 500000,
             startDate: new Date("2026-09-07"),
             endDate: new Date("2026-09-17"),
         },
     });
 
-    // 3. Create FestivalMember (The Audit Context)
-    const devMember = await prisma.festivalMember.upsert({
-        where: { email_festivalId: { email: "dev@example.com", festivalId: festival.id } },
+    // 3. Create OrganizationMember
+    const devMember = await prisma.organizationMember.upsert({
+        where: { email_organizationId: { email: "dev@example.com", organizationId: organization.id } },
         update: {},
         create: {
             userId: devUser.id,
             email: devUser.email,
-            festivalId: festival.id,
-            role: FestivalRole.ADMIN,
+            organizationId: organization.id,
+            role: OrganizationRole.ADMIN,
         },
     });
 
-    console.log(`✅ Festival & Member created: ${festival.name}`);
+    console.log(`✅ Organization & Member created: ${organization.name}`);
 
     // 4. Create Donations
     await prisma.donation.createMany({
@@ -50,15 +51,15 @@ async function main() {
                 donorName: "Rahul Sharma",
                 amount: 10000,
                 category: DonationCategory.GENERAL,
-                festivalId: festival.id,
+                organizationId: organization.id,
                 addedById: devMember.id,
                 date: new Date(),
             },
             {
                 donorName: "Pooja Patel",
                 amount: 5000,
-                category: DonationCategory.GENERAL, // VIP not in schema, using GENERAL
-                festivalId: festival.id,
+                category: DonationCategory.GENERAL,
+                organizationId: organization.id,
                 addedById: devMember.id,
                 date: new Date(),
             },
@@ -75,7 +76,7 @@ async function main() {
                 amount: 20000,
                 category: ExpenseCategory.DECORATION,
                 status: ExpenseStatus.APPROVED,
-                festivalId: festival.id,
+                organizationId: organization.id,
                 addedById: devMember.id,
                 approvedById: devMember.id,
                 createdAt: new Date(),
@@ -85,7 +86,7 @@ async function main() {
                 amount: 10000,
                 category: ExpenseCategory.FOOD,
                 status: ExpenseStatus.APPROVED,
-                festivalId: festival.id,
+                organizationId: organization.id,
                 addedById: devMember.id,
                 approvedById: devMember.id,
                 createdAt: new Date(),
@@ -101,7 +102,7 @@ async function main() {
             name: "Ladoo",
             quantity: "500 Pieces",
             sponsorName: "Mahesh Traders",
-            festivalId: festival.id,
+            organizationId: organization.id,
             status: BhogStatus.PENDING,
         },
     });
@@ -123,7 +124,7 @@ async function main() {
             startTime: tomorrow,
             endTime: tomorrowEnd,
             location: "Main Pandal, Community Center",
-            festivalId: festival.id,
+            organizationId: organization.id,
         },
     });
 
