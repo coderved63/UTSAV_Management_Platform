@@ -105,7 +105,7 @@ export class OverviewService {
             pendingExpenseCount: 0,
             pendingBhogCount: 0,
             remainingBalance: 0,
-            budgetTarget: 0,
+            openingBalance: 0,
             utilizationRate: 0,
             isOverspent: false,
             collectionProgress: 0,
