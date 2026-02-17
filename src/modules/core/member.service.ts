@@ -63,6 +63,7 @@ export class MemberService {
         const tenantPrisma = getTenantPrisma(organizationId);
 
         return await tenantPrisma.volunteerTask.findMany({
+            where: { isArchived: false },
             orderBy: [
                 { priority: "desc" },
                 { createdAt: "desc" }
@@ -97,7 +98,7 @@ export class MemberService {
         const tenantPrisma = getTenantPrisma(organizationId);
 
         return await tenantPrisma.volunteerTask.findMany({
-            where: { assignedToId: member.id },
+            where: { assignedToId: member.id, isArchived: false },
             orderBy: { dueDate: "asc" },
             include: {
                 assignedTo: {
@@ -166,7 +167,7 @@ export class MemberService {
     }
 
     /**
-     * Delete a task
+     * Archive a task (soft-delete)
      * Restricted to ADMIN and COMMITTEE_MEMBER.
      */
     static async deleteTask(organizationId: string, taskId: string) {
@@ -177,8 +178,9 @@ export class MemberService {
 
         const tenantPrisma = getTenantPrisma(organizationId);
 
-        return await tenantPrisma.volunteerTask.delete({
-            where: { id: taskId }
+        return await tenantPrisma.volunteerTask.update({
+            where: { id: taskId },
+            data: { isArchived: true }
         });
     }
 
@@ -210,7 +212,10 @@ export class MemberService {
                 _count: {
                     select: {
                         assignedTasks: {
-                            where: { status: { not: TaskStatus.COMPLETED } }
+                            where: {
+                                status: { not: TaskStatus.COMPLETED },
+                                isArchived: false
+                            }
                         }
                     }
                 }

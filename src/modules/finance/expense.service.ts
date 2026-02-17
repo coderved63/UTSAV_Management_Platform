@@ -213,4 +213,20 @@ export class ExpenseService {
 
         return summary;
     }
+    /**
+     * Archive (soft-delete) an expense
+     */
+    static async archiveExpense(organizationId: string, expenseId: string) {
+        await validateAccess(organizationId, [
+            OrganizationRole.ADMIN,
+            OrganizationRole.TREASURER,
+        ]);
+
+        const tenantPrisma = getTenantPrisma(organizationId);
+
+        return await tenantPrisma.expense.update({
+            where: { id: expenseId },
+            data: { isArchived: true }
+        });
+    }
 }

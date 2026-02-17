@@ -17,7 +17,8 @@ import {
     Plus,
     Shield,
     ChevronRight,
-    LayoutDashboard
+    LayoutDashboard,
+    Handshake
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -139,13 +140,11 @@ export default function ResponsiveDashboardLayout({
                     <X className="w-5 h-5" />
                 </button>
 
-                {/* Sidebar Header */}
                 <div className="p-8 pb-4">
                     <div className="flex items-center gap-2 mb-6">
                         <div className="w-8 h-8 bg-saffron-500 rounded-xl flex items-center justify-center shadow-lg shadow-saffron-500/20">
                             <Shield className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Hub</span>
                     </div>
 
                     <div className="space-y-1">

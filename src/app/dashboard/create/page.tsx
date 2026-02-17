@@ -18,13 +18,15 @@ export default function CreateOrganizationPage() {
         const formData = new FormData(e.currentTarget);
         const name = formData.get("name") as string;
         const slug = formData.get("slug") as string;
+        const budgetTarget = formData.get("budgetTarget") ? Number(formData.get("budgetTarget")) : undefined;
 
         const result = await createOrganizationAction({
             name,
             slug,
             type,
             startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            budgetTarget
         });
 
         if (result.success) {
@@ -143,6 +145,24 @@ export default function CreateOrganizationPage() {
                                             className="w-full bg-slate-50 border-none pl-5 pr-12 py-4 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-slate-900 transition-all font-mono"
                                         />
                                     </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {type === "FESTIVAL" ? "Estimated Budget (Optional)" : "Initial Fund Allotment (Optional)"}
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            name="budgetTarget"
+                                            type="number"
+                                            placeholder="e.g. 50000"
+                                            className="w-full bg-slate-50 border-none px-5 py-4 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-slate-900 transition-all"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 font-medium">
+                                        {type === "FESTIVAL"
+                                            ? "Target amount to raise from donations."
+                                            : "Starting capital provided by the institution."}
+                                    </p>
                                 </div>
                             </div>
 

@@ -52,12 +52,7 @@ export default async function PublicOrganizationPage({ params }: PublicPageProps
                 <div className="max-w-7xl mx-auto relative z-10">
                     <SectionWrapper delay={0.1}>
                         <div className="flex flex-col items-center text-center">
-                            <div className="inline-flex items-center space-x-2 bg-saffron-50 text-saffron-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-saffron-100 mb-8 shadow-sm">
-                                <ShieldCheck className="w-3 h-3" />
-                                <span>Verified Transparency Layer</span>
-                            </div>
-
-                            <h1 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6">
+                            <h1 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6 mt-8">
                                 {organization.name}
                             </h1>
 
@@ -72,9 +67,11 @@ export default async function PublicOrganizationPage({ params }: PublicPageProps
                                 </div>
                             </div>
 
-                            <p className="mt-8 text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-                                {organization.description || "A real-time financial transparency dashboard and event schedule for the devotees and volunteers."}
-                            </p>
+                            {organization.description && (
+                                <p className="mt-8 text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                                    {organization.description}
+                                </p>
+                            )}
                         </div>
                     </SectionWrapper>
                 </div>
@@ -105,7 +102,7 @@ export default async function PublicOrganizationPage({ params }: PublicPageProps
                         <BhogSection
                             bhogList={bhogList}
                             organizationId={organization.id}
-                            organizationName={organization.name}
+                            OrganizationName={organization.name}
                         />
                     </SectionWrapper>
                 </div>

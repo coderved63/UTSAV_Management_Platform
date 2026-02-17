@@ -14,7 +14,9 @@ export default async function DonationsPage({ params }: { params: { orgSlug: str
     const tenantPrisma = getTenantPrisma(organization.id);
 
     const donations = await tenantPrisma.donation.findMany({
-        where: { isArchived: false },
+        where: {
+            isArchived: false,
+        },
         include: {
             addedBy: {
                 select: { user: { select: { name: true } } }
@@ -82,6 +84,11 @@ export default async function DonationsPage({ params }: { params: { orgSlug: str
                                     <td className="px-8 py-6">
                                         <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                                             {format(new Date(donation.date), "MMM d, yyyy")}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="font-bold text-slate-900 uppercase tracking-tight">
+                                            {donation.addedBy?.user?.name || "System"}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-right">

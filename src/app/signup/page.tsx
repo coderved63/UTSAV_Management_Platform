@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, Mail, Lock, User, ArrowRight, Loader2, Phone } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,8 +63,14 @@ export default function SignupPage() {
             >
                 {/* Brand Header */}
                 <div className="flex flex-col items-center mb-8">
-                    <div className="p-3 bg-saffron-500 rounded-2xl shadow-xl shadow-saffron-500/20 mb-4">
-                        <Sparkles className="w-8 h-8 text-white" />
+                    <div className="relative w-24 h-24 mb-4">
+                        <Image
+                            src="/logo.png"
+                            alt="UTSAV Logo"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-tighter">UTSAV</h1>
                     <p className="text-slate-500 font-medium mt-2">Start Managing Your Organization</p>

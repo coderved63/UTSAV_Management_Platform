@@ -44,7 +44,7 @@ export default function DashboardHeader({ organization, role }: DashboardHeaderP
                         {organization.name}
                     </h1>
                     <Badge variant="outline" className="w-fit h-6 rounded-full border-slate-200 bg-white px-3 text-[10px] font-black uppercase tracking-widest text-slate-500 shadow-sm shrink-0">
-                        {organization.type === "FESTIVAL" ? "Organization Dashboard" : "College Club Dashboard"}
+                        {organization.type === "FESTIVAL" ? "Organization Dashboard" : "Club Dashboard"}
                     </Badge>
                 </div>
 

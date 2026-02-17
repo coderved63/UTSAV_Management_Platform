@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Edit2, Loader2, X, IndianRupee } from "lucide-react";
+import { Trash2, Edit2, Loader2, X, IndianRupee } from "lucide-react";
 import { DonationCategory } from "@prisma/client";
-import { updateDonationAction } from "@/actions/donation.actions";
+import { updateDonationAction, archiveDonationAction } from "@/actions/donation.actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -32,6 +32,22 @@ export default function EditDonationModal({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+
+    async function handleDelete() {
+        if (!confirm("Are you sure you want to delete this donation record? This action cannot be undone.")) return;
+
+        setIsLoading(true);
+        const result = await archiveDonationAction(organizationId, donation.id);
+
+        if (result.success) {
+            toast.success("Donation record deleted");
+            setIsOpen(false);
+            router.refresh();
+        } else {
+            setError(result.error);
+            setIsLoading(false);
+        }
+    }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -113,9 +129,15 @@ export default function EditDonationModal({
                                             required
                                             className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black uppercase tracking-tighter focus:ring-2 focus:ring-saffron-500 outline-none"
                                         >
-                                            {Object.values(DonationCategory).map(cat => (
-                                                <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
-                                            ))}
+                                            {isFestival ? (
+                                                Object.values(DonationCategory).map(cat => (
+                                                    <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
+                                                ))
+                                            ) : (
+                                                [DonationCategory.GENERAL, DonationCategory.SPONSORSHIP, DonationCategory.OTHER].map(cat => (
+                                                    <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
+                                                ))
+                                            )}
                                         </select>
                                     </div>
                                 </div>
@@ -132,12 +154,24 @@ export default function EditDonationModal({
                                     </div>
                                 )}
 
-                                <button
-                                    disabled={isLoading}
-                                    className="w-full h-14 bg-saffron-500 hover:bg-saffron-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-saffron-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
-                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
-                                </button>
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        disabled={isLoading}
+                                        className="flex-1 h-14 border-2 border-red-100 bg-white text-red-600 font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-red-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="flex-[2] h-14 bg-saffron-500 hover:bg-saffron-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-saffron-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>

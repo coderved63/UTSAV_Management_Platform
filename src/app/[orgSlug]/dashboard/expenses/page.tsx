@@ -30,6 +30,7 @@ export default async function ExpensesPage({ params }: { params: { orgSlug: stri
         orderBy: { createdAt: "desc" }
     });
 
+    const isFestival = organization.type === "FESTIVAL";
     const isTreasurer = currentMember.role === OrganizationRole.TREASURER || currentMember.role === OrganizationRole.ADMIN;
     const canAdd = ([OrganizationRole.ADMIN, OrganizationRole.COMMITTEE_MEMBER, OrganizationRole.TREASURER] as string[]).includes(currentMember.role);
 
@@ -46,7 +47,7 @@ export default async function ExpensesPage({ params }: { params: { orgSlug: stri
                     <p className="text-slate-500 font-medium mt-1">Track and approve all expenditures for the pavilion.</p>
                 </div>
 
-                {canAdd && <AddExpenseModal organizationId={organization.id} />}
+                {canAdd && <AddExpenseModal organizationId={organization.id} isFestival={isFestival} />}
             </div>
 
             {/* Expenses List */}
@@ -114,6 +115,7 @@ export default async function ExpensesPage({ params }: { params: { orgSlug: stri
                                             <div className="flex items-center justify-end gap-2">
                                                 <EditExpenseModal
                                                     organizationId={organization.id}
+                                                    isFestival={isFestival}
                                                     expense={{
                                                         ...expense,
                                                         amount: Number(expense.amount)

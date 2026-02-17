@@ -169,4 +169,20 @@ export class DonationService {
             }
         });
     }
+    /**
+     * Archive (soft-delete) a donation
+     */
+    static async archiveDonation(organizationId: string, donationId: string) {
+        await validateAccess(organizationId, [
+            OrganizationRole.ADMIN,
+            OrganizationRole.TREASURER,
+        ]);
+
+        const tenantPrisma = getTenantPrisma(organizationId);
+
+        return await tenantPrisma.donation.update({
+            where: { id: donationId },
+            data: { isArchived: true }
+        });
+    }
 }

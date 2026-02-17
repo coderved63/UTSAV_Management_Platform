@@ -69,3 +69,14 @@ export async function updateExpenseAction(data: z.infer<typeof UpdateExpenseSche
         return { error: error.message || "Failed to update expense" };
     }
 }
+
+export async function archiveExpenseAction(organizationId: string, expenseId: string) {
+    try {
+        await ExpenseService.archiveExpense(organizationId, expenseId);
+        revalidatePath(`/[orgSlug]/dashboard/expenses`, "page");
+        revalidatePath(`/[orgSlug]/dashboard/events/[eventId]`, "layout");
+        return { success: true };
+    } catch (error: any) {
+        return { error: error.message || "Failed to archive expense" };
+    }
+}

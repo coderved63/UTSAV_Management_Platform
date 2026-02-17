@@ -11,6 +11,7 @@ import {
     ChevronDown,
     Sparkles
 } from "lucide-react";
+import Image from "next/image";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,10 +35,15 @@ export default function Navbar() {
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/50">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                {/* Branding */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="p-1.5 bg-saffron-500 rounded-lg shadow-lg shadow-saffron-500/20 group-hover:scale-110 transition-transform">
-                        <Sparkles className="w-5 h-5 text-white" />
+                    <div className="relative w-8 h-8 group-hover:scale-110 transition-transform">
+                        <Image
+                            src="/logo.png"
+                            alt="UTSAV Logo"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
                     </div>
                     <span className="text-xl font-black tracking-tighter text-slate-900">UTSAV</span>
                 </Link>

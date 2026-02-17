@@ -46,3 +46,13 @@ export async function updateDonationAction(data: z.infer<typeof UpdateDonationSc
         return { error: error.message || "Failed to update donation" };
     }
 }
+
+export async function archiveDonationAction(organizationId: string, donationId: string) {
+    try {
+        await DonationService.archiveDonation(organizationId, donationId);
+        revalidatePath(`/[orgSlug]/dashboard/donations`, "page");
+        return { success: true };
+    } catch (error: any) {
+        return { error: error.message || "Failed to archive donation" };
+    }
+}

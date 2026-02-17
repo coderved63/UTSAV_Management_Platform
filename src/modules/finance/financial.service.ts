@@ -23,10 +23,22 @@ export class FinancialService {
         const tenantPrisma = getTenantPrisma(organizationId);
 
         // 3. Parallel fetching for optimal performance
-        const [donations, expenses, pendingExpenses, bhogItems, Organization] = await Promise.all([
-            // Total Donations (Active only)
+        const [funds, sponsorships, expenses, pendingExpenses, bhogItems, Organization] = await Promise.all([
+            // Total Funds (Internal/General - Excludes Sponsorships)
             tenantPrisma.donation.aggregate({
-                where: { isArchived: false },
+                where: {
+                    isArchived: false,
+                    category: { not: "SPONSORSHIP" as any }
+                },
+                _sum: { amount: true },
+                _count: { _all: true },
+            }),
+            // Total Sponsorships (External)
+            tenantPrisma.donation.aggregate({
+                where: {
+                    isArchived: false,
+                    category: "SPONSORSHIP" as any
+                },
                 _sum: { amount: true },
                 _count: { _all: true },
             }),
@@ -59,18 +71,23 @@ export class FinancialService {
             })
         ]);
 
-        const totalDonations = donations._sum.amount || new Prisma.Decimal(0);
+        const totalFunds = funds._sum.amount || new Prisma.Decimal(0);
+        const totalSponsorships = sponsorships._sum.amount || new Prisma.Decimal(0);
+        const totalDonations = totalFunds.plus(totalSponsorships); // Combined for liquidity if needed
+
         const totalExpenses = expenses._sum.amount || new Prisma.Decimal(0);
         const totalPendingExpenses = pendingExpenses._sum.amount || new Prisma.Decimal(0);
         const budgetTarget = Organization?.budgetTarget || new Prisma.Decimal(0);
         const isFestival = Organization?.type === "FESTIVAL";
 
         // 4. Decimal-safe calculations
-        // For FESTIVAL: Total Available = Total Donations
-        // For CLUB/PRIVATE: Total Available = Budget Target + External Funds (Donations)
+        // For FESTIVAL: Total Available = Total Donations (Funds + Sponsorships)
+        // For CLUB/PRIVATE: Total Available = Budget Target + Total Funds (General only)
+        // NOTE: Sponsorships are tracked but DO NOT increase the "Fund Allotted" metric for Clubs
+
         const totalAvailable = isFestival
             ? totalDonations
-            : budgetTarget.plus(totalDonations);
+            : budgetTarget.plus(totalFunds).plus(totalSponsorships); // Total Liquidity = Allotted (Budget+General) + Sponsorships
 
         const remainingBalance = totalAvailable.minus(totalExpenses);
 
@@ -80,9 +97,21 @@ export class FinancialService {
             ? 0
             : totalExpenses.dividedBy(totalAvailable).times(100).toNumber();
 
+        // Safe count access
+        const fundCount = funds._count && typeof funds._count === 'object' ? funds._count._all : 0;
+        const sponsorshipCount = sponsorships._count && typeof sponsorships._count === 'object' ? sponsorships._count._all : 0;
+        const totalDonationCount = fundCount + sponsorshipCount;
+
         return {
-            totalDonations: Number(totalDonations),
-            totalDonationCount: donations._count._all,
+            totalDonations: Number(totalDonations), // Combined
+            totalFunds: Number(totalFunds),         // Internal/General
+            totalSponsorships: Number(totalSponsorships), // External
+            totalLiquidity: Number(totalAvailable), // NEW: Total accessible funds
+
+            totalDonationCount,
+            fundCount,
+            sponsorshipCount,
+
             totalExpenses: Number(totalExpenses),
             approvedExpenseCount: expenses._count._all,
             totalPendingExpenses: Number(totalPendingExpenses),
@@ -94,7 +123,9 @@ export class FinancialService {
             utilizationRate: rawUtilization,
             isOverspent: rawUtilization > 100,
 
-            collectionProgress: budgetTarget.isZero() ? 0 : totalDonations.dividedBy(budgetTarget).times(100).toNumber(),
+            // Progress based on Allotted Fund vs Expenses? or Collection vs Target?
+            // For Club: Collection Progress = Funds / Budget Target (Goal)
+            collectionProgress: budgetTarget.isZero() ? 0 : totalFunds.dividedBy(budgetTarget).times(100).toNumber(),
         };
     }
 

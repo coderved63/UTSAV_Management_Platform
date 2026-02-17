@@ -1,7 +1,8 @@
-# 🏛️ UTSAV: Organization Governance & Pavilion Intelligence
-
-<!-- [PLACEHOLDER: Add a high-quality Hero Banner/Logo here] -->
-<!-- Ideal dimensions: 1200x600px. Shows the dashboard UI with glassmorphism effects. -->
+<div align="center">
+  <img src="public/logo.png" alt="UTSAV Logo" width="200" />
+  <h1>🏛️ UTSAV</h1>
+  <p><strong>Organization Governance & Pavilion Intelligence</strong></p>
+</div>
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)

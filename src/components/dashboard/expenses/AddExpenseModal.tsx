@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input";
 
 export default function AddExpenseModal({
     organizationId,
-    eventId
+    eventId,
+    isFestival = true
 }: {
     organizationId: string,
-    eventId?: string
+    eventId?: string,
+    isFestival?: boolean
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -91,9 +93,31 @@ export default function AddExpenseModal({
                                     required
                                     className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black uppercase tracking-tighter focus:ring-2 focus:ring-saffron-500 outline-none"
                                 >
-                                    {Object.values(ExpenseCategory).map(cat => (
-                                        <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
-                                    ))}
+                                    {isFestival ? (
+                                        [
+                                            ExpenseCategory.IDOL,
+                                            ExpenseCategory.DECORATION,
+                                            ExpenseCategory.LIGHTING,
+                                            ExpenseCategory.FOOD,
+                                            ExpenseCategory.SOUND,
+                                            ExpenseCategory.SECURITY,
+                                            ExpenseCategory.MISCELLANEOUS
+                                        ].map(cat => (
+                                            <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
+                                        ))
+                                    ) : (
+                                        [
+                                            ExpenseCategory.EQUIPMENT,
+                                            ExpenseCategory.MARKETING,
+                                            ExpenseCategory.INFRASTRUCTURE,
+                                            ExpenseCategory.TRAVEL,
+                                            ExpenseCategory.RENTAL,
+                                            ExpenseCategory.OPERATIONS,
+                                            ExpenseCategory.MISCELLANEOUS
+                                        ].map(cat => (
+                                            <option key={cat} value={cat === ExpenseCategory.MISCELLANEOUS ? "Other" : cat.replace('_', ' ')}>{cat === ExpenseCategory.MISCELLANEOUS ? "Other" : cat.replace('_', ' ')}</option>
+                                        ))
+                                    )}
                                 </select>
                             </div>
                         </div>

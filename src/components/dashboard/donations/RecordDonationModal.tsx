@@ -9,14 +9,21 @@ import { Input } from "@/components/ui/input";
 
 export default function RecordDonationModal({
     organizationId,
-    isFestival = true
+    isFestival = true,
+    defaultCategory
 }: {
     organizationId: string,
-    isFestival?: boolean
+    isFestival?: boolean,
+    defaultCategory?: DonationCategory
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Simplified categories for Clubs
+    const categories = isFestival
+        ? Object.values(DonationCategory)
+        : [DonationCategory.GENERAL, DonationCategory.SPONSORSHIP, DonationCategory.OTHER];
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -28,7 +35,7 @@ export default function RecordDonationModal({
             organizationId,
             donorName: formData.get("donorName") as string,
             amount: Number(formData.get("amount")),
-            category: formData.get("category") as DonationCategory,
+            category: (formData.get("category") as DonationCategory) || defaultCategory,
             notes: formData.get("notes") as string,
         };
 
@@ -93,16 +100,29 @@ export default function RecordDonationModal({
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category</Label>
-                                <select
-                                    id="category"
-                                    name="category"
-                                    required
-                                    className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black uppercase tracking-tighter focus:ring-2 focus:ring-saffron-500 outline-none"
-                                >
-                                    {Object.values(DonationCategory).map(cat => (
-                                        <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
-                                    ))}
-                                </select>
+                                {defaultCategory ? (
+                                    <div className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 flex items-center text-xs font-black uppercase tracking-tighter text-slate-500">
+                                        {defaultCategory.replace('_', ' ')}
+                                        <input type="hidden" name="category" value={defaultCategory} />
+                                    </div>
+                                ) : (
+                                    <select
+                                        id="category"
+                                        name="category"
+                                        required
+                                        className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black uppercase tracking-tighter focus:ring-2 focus:ring-saffron-500 outline-none"
+                                    >
+                                        {isFestival ? (
+                                            Object.values(DonationCategory).map(cat => (
+                                                <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
+                                            ))
+                                        ) : (
+                                            [DonationCategory.GENERAL, DonationCategory.SPONSORSHIP, DonationCategory.OTHER].map(cat => (
+                                                <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
+                                            ))
+                                        )}
+                                    </select>
+                                )}
                             </div>
                         </div>
 

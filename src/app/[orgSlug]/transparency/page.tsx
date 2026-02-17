@@ -48,15 +48,11 @@ export default async function TransparencyPage({ params }: TransparencyPageProps
                 {/* Hero Section */}
                 <SectionWrapper delay={0.1}>
                     <div className="mb-12">
-                        <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100 mb-6 shadow-sm">
-                            <ShieldCheck className="w-3.5 h-3.5" />
-                            <span>Public Audit Trail Active</span>
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase">
-                            Radical Trust
+                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase mt-8">
+                            Audit Trail
                         </h1>
                         <p className="text-slate-500 font-medium text-lg max-w-2xl">
-                            Real-time financials and event orchestration for <span className="text-slate-900 font-bold underline decoration-saffron-500 decoration-2">{organization.name}</span>.
+                            Verified financial records and event history for <span className="text-slate-900 font-bold underline decoration-saffron-500 decoration-2">{organization.name}</span>.
                         </p>
                     </div>
                 </SectionWrapper>
@@ -120,7 +116,7 @@ export default async function TransparencyPage({ params }: TransparencyPageProps
                                 </div>
                                 <p className="text-xs text-blue-700/80 font-medium leading-relaxed">
                                     Every transaction and scheduled event is directly mirrored from our internal management systems.
-                                    Radical transparency ensures a community-driven pavilion.
+                                    Full transparency ensures a community-driven pavilion.
                                 </p>
                             </div>
                         </SectionWrapper>

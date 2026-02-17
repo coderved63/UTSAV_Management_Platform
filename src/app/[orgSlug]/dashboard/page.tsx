@@ -71,7 +71,7 @@ export default async function DashboardOverviewPage({
                     {/* 2️⃣ Financial Health Grid (Only for Management) */}
                     {member.role !== OrganizationRole.VOLUNTEER && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {/* Card 1: Primary Funding Source */}
+                            {/* Row 1: Funding Sources */}
                             {isFestival ? (
                                 <StatCard
                                     title="Total Donations"
@@ -81,16 +81,39 @@ export default async function DashboardOverviewPage({
                                     iconColor="text-green-500"
                                 />
                             ) : (
+                                <>
+                                    {/* 1. Fund Allotted (Initial + General) */}
+                                    <StatCard
+                                        title="Fund Allotted"
+                                        value={financials.budgetTarget ? `₹${(Number(financials.budgetTarget) + Number(financials.totalFunds)).toLocaleString()}` : "Not Set"}
+                                        subtext="Initial Allocation + General Funds"
+                                        iconName="target"
+                                        iconColor="text-saffron-500"
+                                    />
+                                    {/* 2. Sponsorships (External) */}
+                                    <StatCard
+                                        title="Sponsorships"
+                                        value={`₹${Number(financials.totalSponsorships).toLocaleString()}`}
+                                        subtext={`${financials.sponsorshipCount} external partners`}
+                                        iconName="donation"
+                                        iconColor="text-purple-500"
+                                    />
+                                </>
+                            )}
+
+                            {/* Row 2: Liquidity & Spending */}
+                            {/* 3. Total Liquidity (Funds + Sponsorships) */}
+                            {!isFestival && (
                                 <StatCard
-                                    title="Fund Allotted"
-                                    value={financials.budgetTarget ? `₹${Number(financials.budgetTarget).toLocaleString()}` : "Not Set"}
-                                    subtext="Total organizational allocation"
-                                    iconName="target"
-                                    iconColor="text-saffron-500"
+                                    title="Total Funds"
+                                    value={`₹${Number(financials.totalLiquidity).toLocaleString()}`}
+                                    subtext="Allotted + Sponsorships"
+                                    iconName="balance"
+                                    iconColor="text-emerald-600"
                                 />
                             )}
 
-                            {/* Card 2: Actual Spending */}
+                            {/* 4. Approved Expenses */}
                             <StatCard
                                 title="Approved Expenses"
                                 value={`₹${Number(financials.totalExpenses).toLocaleString()}`}
@@ -99,7 +122,20 @@ export default async function DashboardOverviewPage({
                                 iconColor="text-blue-500"
                             />
 
-                            {/* Card 3: Pending Liability */}
+                            {/* Row 3: Net Position */}
+                            {/* 5. Remaining Balance */}
+                            <div className="sm:col-span-2">
+                                <StatCard
+                                    title="Remaining Balance"
+                                    value={`₹${Number(financials.remainingBalance).toLocaleString()}`}
+                                    subtext="Net Available for Deployment"
+                                    iconName="wallet"
+                                    iconColor="text-emerald-500"
+                                    isNegative={Number(financials.remainingBalance) < 0}
+                                />
+                            </div>
+
+                            {/* Secondary Stats (Utilization / Pending) */}
                             <StatCard
                                 title="Pending Expenses"
                                 value={`₹${Number(financials.totalPendingExpenses).toLocaleString()}`}
@@ -109,35 +145,6 @@ export default async function DashboardOverviewPage({
                                 isNegative={financials.pendingExpenseCount > 0}
                             />
 
-                            {/* Card 4: Liquid/Available Pool */}
-                            <StatCard
-                                title="Remaining Balance"
-                                value={`₹${Number(financials.remainingBalance).toLocaleString()}`}
-                                subtext="Available for deployment"
-                                iconName="balance"
-                                iconColor="text-emerald-500"
-                                isNegative={Number(financials.remainingBalance) < 0}
-                            />
-
-                            {/* Card 5: Secondary Info / Target */}
-                            {isFestival ? (
-                                <StatCard
-                                    title="Budget Target"
-                                    value={financials.budgetTarget ? `₹${Number(financials.budgetTarget).toLocaleString()}` : "Not Set"}
-                                    subtext="Overall organization target"
-                                    iconName="target"
-                                />
-                            ) : (
-                                <StatCard
-                                    title="External Funds"
-                                    value={`₹${Number(financials.totalDonations).toLocaleString()}`}
-                                    subtext={`${financials.totalDonationCount} additional entries`}
-                                    iconName="donation"
-                                    iconColor="text-slate-400"
-                                />
-                            )}
-
-                            {/* Card 6: Efficiency Ratio */}
                             <StatCard
                                 title="Utilization"
                                 value={`${Math.round(financials.utilizationRate)}%`}
