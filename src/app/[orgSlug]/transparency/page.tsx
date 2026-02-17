@@ -1,0 +1,136 @@
+import { notFound } from "next/navigation";
+import { OrganizationService } from "@/modules/core/organization.service";
+import { PublicTransparencyService } from "@/modules/festival/public-transparency.service";
+import AuditTable from "@/components/public/transparency/AuditTable";
+import PublicSchedule from "@/components/public/transparency/PublicSchedule";
+import SectionWrapper from "@/components/public/SectionWrapper";
+import { ShieldCheck, Info, ArrowLeft, Download } from "lucide-react";
+import Link from "next/link";
+
+interface TransparencyPageProps {
+    params: {
+        orgSlug: string;
+    };
+}
+
+export default async function TransparencyPage({ params }: TransparencyPageProps) {
+    const { orgSlug } = params;
+    const organization = await OrganizationService.getOrganizationBySlug(orgSlug);
+
+    if (!organization || organization.type === "CLUB") notFound();
+
+    const [auditTrail, stats, schedule] = await Promise.all([
+        PublicTransparencyService.getFullAuditTrail(organization.id),
+        PublicTransparencyService.getTransparencyStats(organization.id),
+        PublicTransparencyService.getPublicSchedule(organization.id),
+    ]);
+
+    return (
+        <div className="min-h-screen bg-[#F8FAFC] pb-24">
+            {/* Header */}
+            <nav className="bg-white border-b border-slate-100 py-4 px-6 sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    <Link
+                        href={`/${orgSlug}`}
+                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-saffron-600 transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Organization
+                    </Link>
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-black text-sm">U</div>
+                        <span className="font-black text-slate-900 text-xs tracking-tighter uppercase">UTSAV Transparency</span>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto px-6 py-16">
+                {/* Hero Section */}
+                <SectionWrapper delay={0.1}>
+                    <div className="mb-12">
+                        <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100 mb-6 shadow-sm">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>Public Audit Trail Active</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase">
+                            Radical Trust
+                        </h1>
+                        <p className="text-slate-500 font-medium text-lg max-w-2xl">
+                            Real-time financials and event orchestration for <span className="text-slate-900 font-bold underline decoration-saffron-500 decoration-2">{organization.name}</span>.
+                        </p>
+                    </div>
+                </SectionWrapper>
+
+                {/* Quick Stats Grid */}
+                <SectionWrapper delay={0.2}>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Total Collections</p>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tighter">₹{stats.totalDonations.toLocaleString()}</h3>
+                            <p className="text-xs text-emerald-500 font-bold mt-1 uppercase tracking-tight">{stats.donationCount} Verified Donors</p>
+                        </div>
+                        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Total Expenditures</p>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tighter text-rose-600">₹{stats.totalExpenses.toLocaleString()}</h3>
+                            <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-tight">{stats.expenseCount} Audited Items</p>
+                        </div>
+                        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Remaining Balance</p>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tighter text-emerald-600">₹{(stats.totalDonations - stats.totalExpenses).toLocaleString()}</h3>
+                            <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-tight">Funds in Trust</p>
+                        </div>
+                        <div className="bg-saffron-500 p-8 rounded-[2rem] border border-saffron-600 shadow-lg shadow-saffron-100 flex flex-col justify-between">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">Audit Integrity</p>
+                            <div className="flex items-end justify-between">
+                                <h3 className="text-3xl font-black text-white tracking-tighter">100%</h3>
+                                <ShieldCheck className="w-8 h-8 text-white/50" />
+                            </div>
+                        </div>
+                    </div>
+                </SectionWrapper>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    {/* Left: Financial Audit Trail */}
+                    <div className="lg:col-span-2 space-y-12">
+                        <SectionWrapper delay={0.3}>
+                            <div className="flex items-center justify-between mb-6 px-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg">
+                                        <ShieldCheck className="w-4 h-4" />
+                                    </div>
+                                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Verified Ledger</h3>
+                                </div>
+                                <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">
+                                    <Download className="w-4 h-4" /> Export Audit
+                                </button>
+                            </div>
+                            <AuditTable entries={auditTrail as any} />
+                        </SectionWrapper>
+                    </div>
+
+                    {/* Right: Public Schedule */}
+                    <div className="space-y-12">
+                        <SectionWrapper delay={0.5}>
+                            <div className="bg-blue-50 border border-blue-100 rounded-[2rem] p-6 flex flex-col gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-white rounded-xl shadow-sm">
+                                        <Info className="w-4 h-4 text-blue-500" />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-900">Integrity Note</span>
+                                </div>
+                                <p className="text-xs text-blue-700/80 font-medium leading-relaxed">
+                                    Every transaction and scheduled event is directly mirrored from our internal management systems.
+                                    Radical transparency ensures a community-driven pavilion.
+                                </p>
+                            </div>
+                        </SectionWrapper>
+
+                        <SectionWrapper delay={0.6}>
+                            <PublicSchedule events={schedule as any} />
+                        </SectionWrapper>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}
