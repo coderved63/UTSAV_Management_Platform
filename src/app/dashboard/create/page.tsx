@@ -148,7 +148,7 @@ export default function CreateOrganizationPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                        {type === "FESTIVAL" ? "Estimated Budget (Optional)" : "Initial Fund Allotment (Optional)"}
+                                        {type === "FESTIVAL" ? "Opening Balance (Collection Till Date)" : "Initial Fund Allotment (Optional)"}
                                     </label>
                                     <div className="relative">
                                         <input
@@ -160,7 +160,7 @@ export default function CreateOrganizationPage() {
                                     </div>
                                     <p className="text-[10px] text-slate-400 font-medium">
                                         {type === "FESTIVAL"
-                                            ? "Target amount to raise from donations."
+                                            ? "Funds collected manually before onboarding to UTSAV."
                                             : "Starting capital provided by the institution."}
                                     </p>
                                 </div>

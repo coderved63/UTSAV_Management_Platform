@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { OrganizationRole } from "@prisma/client";
 import EditOrganizationModal from "@/components/dashboard/organization/EditOrganizationModal";
+import { cn } from "@/lib/utils";
 
 export default async function DashboardOverviewPage({
     params,
@@ -73,19 +74,46 @@ export default async function DashboardOverviewPage({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {/* Row 1: Funding Sources */}
                             {isFestival ? (
-                                <StatCard
-                                    title="Total Donations"
-                                    value={`₹${Number(financials.totalDonations).toLocaleString()}`}
-                                    subtext={`${financials.totalDonationCount} contributions`}
-                                    iconName="donation"
-                                    iconColor="text-green-500"
-                                />
+                                <>
+                                    {/* 1. Opening Balance (Initial Collection) */}
+                                    <StatCard
+                                        title="Opening Balance"
+                                        value={`₹${Number(financials.openingBalance).toLocaleString()}`}
+                                        subtext="Collection Till App Onboarding"
+                                        iconName="wallet"
+                                        iconColor="text-slate-500"
+                                    />
+                                    {/* 2. Member Donations (App Recorded) */}
+                                    <StatCard
+                                        title="Member Donations"
+                                        value={`₹${Number(financials.totalDonations).toLocaleString()}`}
+                                        subtext={`${financials.totalDonationCount - financials.sponsorshipCount} app contributions`}
+                                        iconName="donation"
+                                        iconColor="text-green-500"
+                                    />
+                                    {/* 3. Sponsorships (External) */}
+                                    <StatCard
+                                        title="Sponsorships"
+                                        value={`₹${Number(financials.totalSponsorships).toLocaleString()}`}
+                                        subtext={`${financials.sponsorshipCount} partner assets`}
+                                        iconName="target"
+                                        iconColor="text-indigo-500"
+                                    />
+                                    {/* 4. Total Collection (Liquidity) */}
+                                    <StatCard
+                                        title="Total Collection"
+                                        value={`₹${Number(financials.totalLiquidity).toLocaleString()}`}
+                                        subtext="Combined Financial Strength"
+                                        iconName="balance"
+                                        iconColor="text-emerald-600"
+                                    />
+                                </>
                             ) : (
                                 <>
                                     {/* 1. Fund Allotted (Initial + General) */}
                                     <StatCard
                                         title="Fund Allotted"
-                                        value={financials.budgetTarget ? `₹${(Number(financials.budgetTarget) + Number(financials.totalFunds)).toLocaleString()}` : "Not Set"}
+                                        value={financials.openingBalance ? `₹${(Number(financials.openingBalance) + Number(financials.totalFunds)).toLocaleString()}` : "Not Set"}
                                         subtext="Initial Allocation + General Funds"
                                         iconName="target"
                                         iconColor="text-saffron-500"
@@ -98,22 +126,19 @@ export default async function DashboardOverviewPage({
                                         iconName="donation"
                                         iconColor="text-purple-500"
                                     />
+                                    {/* 3. Total Funds (Total Liquidity) */}
+                                    <StatCard
+                                        title="Total Funds"
+                                        value={`₹${Number(financials.totalLiquidity).toLocaleString()}`}
+                                        subtext="Allotted + Sponsorships"
+                                        iconName="balance"
+                                        iconColor="text-emerald-600"
+                                    />
                                 </>
                             )}
 
-                            {/* Row 2: Liquidity & Spending */}
-                            {/* 3. Total Liquidity (Funds + Sponsorships) */}
-                            {!isFestival && (
-                                <StatCard
-                                    title="Total Funds"
-                                    value={`₹${Number(financials.totalLiquidity).toLocaleString()}`}
-                                    subtext="Allotted + Sponsorships"
-                                    iconName="balance"
-                                    iconColor="text-emerald-600"
-                                />
-                            )}
-
-                            {/* 4. Approved Expenses */}
+                            {/* Row 2: Spending */}
+                            {/* Approved Expenses */}
                             <StatCard
                                 title="Approved Expenses"
                                 value={`₹${Number(financials.totalExpenses).toLocaleString()}`}
@@ -123,8 +148,7 @@ export default async function DashboardOverviewPage({
                             />
 
                             {/* Row 3: Net Position */}
-                            {/* 5. Remaining Balance */}
-                            <div className="sm:col-span-2">
+                            <div className={cn(isFestival ? "sm:col-span-1" : "sm:col-span-2")}>
                                 <StatCard
                                     title="Remaining Balance"
                                     value={`₹${Number(financials.remainingBalance).toLocaleString()}`}
