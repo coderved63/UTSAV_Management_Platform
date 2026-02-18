@@ -32,7 +32,7 @@ A "Zero-Trust" financial system designed for radical transparency.
 - **Approval Workflows:** Expenses require digital sign-off before impacting the ledger.
 - **Real-time Analytics:** Dashboard aggregations for target vs. utilized funds.
 
-### � Intelligent Event Governance
+### Intelligent Event Governance
 - **Lifecycle Management:** Plan, Activate, and Archive events.
 - **Soft-Delete Architecture:** Historical data (attendees, finances) is preserved even after event deletion for audit purposes.
 - **Smart Rostering:** Automated team assignments that filter out archived or suspended members.
