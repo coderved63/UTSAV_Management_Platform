@@ -139,6 +139,9 @@ export default function InviteMemberModal({
                                 <strong>Note:</strong> Due to email service (Resend) restrictions in dev mode, emails might not reach every inbox.
                                 You can always copy the invite link manually from the "Pending Invitations" section below.
                             </p>
+                            <p className="text-[10px] text-amber-600 font-bold mt-2 leading-relaxed bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                ⚠️ SAFETY: Share links ONLY with the recipient. We have now added strict email matching to prevent account hijacking.
+                            </p>
                         </div>
                     </form>
                 </div>
