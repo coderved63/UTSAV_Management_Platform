@@ -1,11 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, useSpring, useMotionValue } from "framer-motion";
+import React, { useEffect, useState, useCallback } from "react";
+import { motion, useSpring, useMotionValue, AnimatePresence } from "framer-motion";
+
+interface Particle {
+    id: number;
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+}
 
 export default function CustomCursor() {
     const [isHovering, setIsHovering] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const [particles, setParticles] = useState<Particle[]>([]);
 
     // Mouse coordinates
     const mouseX = useMotionValue(-100);
@@ -15,11 +24,32 @@ export default function CustomCursor() {
     const smoothX = useSpring(mouseX, { damping: 20, stiffness: 250 });
     const smoothY = useSpring(mouseY, { damping: 20, stiffness: 250 });
 
+    const spawnParticle = useCallback((x: number, y: number) => {
+        const id = Date.now() + Math.random();
+        const colors = ["#f97316", "#6366f1", "#fbbf24", "#ffffff"]; // Saffron, Indigo, Amber, White
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 4 + 2;
+
+        const newParticle: Particle = { id, x, y, size, color };
+        setParticles(prev => [...prev.slice(-15), newParticle]); // Limit to 15 particles for performance
+    }, []);
+
     useEffect(() => {
+        let lastSpawn = 0;
         const handleMouseMove = (e: MouseEvent) => {
-            mouseX.set(e.clientX);
-            mouseY.set(e.clientY);
+            const x = e.clientX;
+            const y = e.clientY;
+            mouseX.set(x);
+            mouseY.set(y);
+
             if (!isVisible) setIsVisible(true);
+
+            // Throttle particle spawning
+            const now = Date.now();
+            if (now - lastSpawn > 50) {
+                spawnParticle(x, y);
+                lastSpawn = now;
+            }
 
             // Check if hovering over interactive elements
             const target = e.target as HTMLElement;
@@ -44,12 +74,42 @@ export default function CustomCursor() {
             document.removeEventListener("mouseleave", handleMouseLeave);
             document.removeEventListener("mouseenter", handleMouseEnter);
         };
-    }, [isVisible, mouseX, mouseY]);
+    }, [isVisible, mouseX, mouseY, spawnParticle]);
 
     if (!isVisible) return null;
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[9999]">
+            {/* Glitter Trail */}
+            <AnimatePresence>
+                {particles.map((p) => (
+                    <motion.div
+                        key={p.id}
+                        initial={{ opacity: 1, scale: 1, x: p.x, y: p.y }}
+                        animate={{
+                            opacity: 0,
+                            scale: 0,
+                            y: p.y + (Math.random() - 0.5) * 40,
+                            x: p.x + (Math.random() - 0.5) * 40,
+                            rotate: 360
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="absolute rounded-full"
+                        style={{
+                            width: p.size,
+                            height: p.size,
+                            backgroundColor: p.color,
+                            boxShadow: `0 0 10px ${p.color}`,
+                            left: 0,
+                            top: 0,
+                            translateX: "-50%",
+                            translateY: "-50%",
+                        }}
+                    />
+                ))}
+            </AnimatePresence>
+
             {/* Outer Ring */}
             <motion.div
                 style={{
