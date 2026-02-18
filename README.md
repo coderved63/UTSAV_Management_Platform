@@ -44,34 +44,65 @@ A "Zero-Trust" financial system designed for radical transparency.
 
 ---
 
-##  System Architecture
+---
 
-UTSAV follows a modular, service-oriented architecture ensuring separation of concerns and scalability.
+## 🏛️ System Architecture
 
+UTSAV is built on a **Modular Monolith** architecture using Next.js 14, prioritizing type-safety, tenant isolation, and atomic state management.
+
+### 🧩 High-Level Design
 ```mermaid
 graph TD
-    User((User)) -->|Auth via NextAuth| WebApp[Next.js Web App]
+    User((User)) -->|HTTPS| Vercel[Vercel Edge/App Layer]
     
-    subgraph "Application Layer"
-        WebApp -->|Server Actions| OrgService[Organization Service]
-        WebApp -->|Server Actions| FinService[Financial Service]
-        WebApp -->|Server Actions| EventService[Event Service]
+    subgraph "Application Logic"
+        Vercel -->|Next.js RSC| Pages[Server Components]
+        Vercel -->|Server Actions| Services[Domain Services]
+        Services -->|RBAC Validation| AccessControl[Access Control Layer]
     end
 
-    subgraph "Data Access Layer"
-        OrgService -->|getTenantPrisma| Prisma[Prisma ORM]
-        FinService -->|getTenantPrisma| Prisma
-        EventService -->|getTenantPrisma| Prisma
+    subgraph "Persistence Layer"
+        AccessControl -->|getTenantPrisma| PrismaORM[Prisma Client Extensions]
+        PrismaORM -->|SQL| PostgreSQL[(PostgreSQL / Neon)]
     end
 
-    subgraph "Infrastructure"
-        Prisma -->|Query| DB[(PostgreSQL Database)]
-        WebApp -->|SendGrid/SMTP| Email[Email Service]
+    subgraph "Third-Party Services"
+        Services -->|SMTP/API| Resend[Email Engine]
+        Vercel -->|Webhooks| External[External Integrations]
     end
 
-    style WebApp fill:#f9f,stroke:#333,stroke-width:2px
-    style DB fill:#bbf,stroke:#333,stroke-width:2px
+    style Vercel fill:#000,color:#fff,stroke:#333
+    style PostgreSQL fill:#336791,color:#fff
 ```
+
+---
+
+## 🏗️ Deep System Design Pillars
+
+### 1. Logical Multi-Tenancy (Row-Level Isolation)
+Instead of expensive physical database-per-tenant isolation, UTSAV utilizes **Logical Isolation** via a custom Prisma Extension.
+- **The Context Pattern**: Every request is wrapped in an `organizationId` context.
+- **getTenantPrisma**: We extended the Prisma client to automatically inject `WHERE organizationId = X` filters into every query. This ensures that even a developer error cannot leak data between "Pavilions" (Organizations).
+
+### 2. High-Integrity Financial Engine
+To prevent data corruption during simultaneous donations or expenses, UTSAV implements:
+- **Atomic Transactions**: All financial operations use `prisma.$transaction`. If a donation record fails, the running balance never updates—ensuring "all-or-nothing" consistency.
+- **State Immutability**: Critical records are never truly deleted; they are "Archived" to maintain an unbroken audit trail for year-end transparency reports.
+
+### 3. Granular RBAC (Role-Based Access Control)
+Access is enforced at the **Service Layer**, not just the UI level.
+| Role | Access Level | Responsibilities |
+| :--- | :--- | :--- |
+| **Admin** | Superuser | Governance, Deletion, Role Management |
+| **Treasurer** | Financial | Expense Approvals, Audit Logs, Income Entry |
+| **Committee** | Operational | Task Delegation, Event Orchestration |
+| **Volunteer** | Execution | Task Updates, Attendee Management |
+
+### 4. Soft-Delete & Audit Archiving
+The system implements a standardized `isArchived` pattern across all models. 
+- **Preserved History**: Deleting an event doesn't scrub its financial footprint; it moves it to a "Historical" state, allowing the organization to look back at past years' performance without cluttering the active dashboard.
+
+---
 
 ---
 
