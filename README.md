@@ -20,7 +20,9 @@ Originally conceived as a *Festival Management System*, UTSAV has evolved into a
 
 ### � Multi-Tenant Security & Isolation
 Built from the ground up for scale, UTSAV uses a robust multi-tenant architecture.
-- **Virtual Pavilions:** Create unlimited organizations (Clubs, Committees, Mandals).
+- **Virtual Pavilions:** Create and manage diverse organizations (Festivals, Clubs, Committees).
+- **Hard Limits & Governance:** Enforced limit of 3 organizations per user to maintain ecosystem integrity.
+- **Organization Deletion:** Full control over the lifecycle with a secure "Danger Zone" for permanent organization deletion.
 - **Architectural Isolation:** Custom Prisma Extensions (`getTenantPrisma`) ensure data never leaks between organizations.
 - **Role-Based Access Control (RBAC):** Granular permissions for Admins, Treasurers, Members, and Volunteers.
 
@@ -35,10 +37,10 @@ A "Zero-Trust" financial system designed for radical transparency.
 - **Soft-Delete Architecture:** Historical data (attendees, finances) is preserved even after event deletion for audit purposes.
 - **Smart Rostering:** Automated team assignments that filter out archived or suspended members.
 
-### 🤝 Member Lifecycle
-- **Invite System:** Secure, token-based email invitations.
-- **Revocation:** Instantly revoke pending invites to maintain security.
-- **Profile Centricity:** Members have a unified identity across multiple organizations.
+- **Shielded Invitations:** High-security, token-based system with strict email matching to prevent account hijacking.
+- **Omnichannel Sharing:** Generate instant invitation links for direct sharing via WhatsApp or personal messaging.
+- **Instant Onboarding:** Ability to skip automated emails for faster, link-based member onboarding.
+- **Profile Centricity:** Members maintain a unified identity across multiple organizations while preserving role-specific data.
 
 ---
 
