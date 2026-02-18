@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import TempleDoors from "@/components/landing/TempleDoors";
 import LandingHero from "@/components/landing/LandingHero";
 import FeaturesSection from "@/components/landing/FeaturesSection";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 import { useSession } from "next-auth/react";
 
@@ -28,7 +29,8 @@ export default function LandingPage() {
     };
 
     return (
-        <main className="relative min-h-screen w-full bg-[#020617] overflow-x-hidden">
+        <main className="relative min-h-screen w-full bg-[#020617] overflow-x-hidden cursor-none">
+            <CustomCursor />
 
             {/* Ambient Background Glow */}
             <motion.div
