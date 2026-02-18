@@ -65,6 +65,19 @@ export class OrganizationService {
         budgetTarget?: number;
         type: "FESTIVAL" | "CLUB";
     }, userId: string) {
+        // Enforce 3-organization limit (as ADMIN)
+        const activeCount = await prisma.organizationMember.count({
+            where: {
+                userId,
+                role: "ADMIN",
+                isArchived: false,
+            }
+        });
+
+        if (activeCount >= 3) {
+            throw new Error("You have reached the maximum limit of 3 organizations. Please delete one to create another.");
+        }
+
         return await prisma.$transaction(async (tx) => {
             // 1. Create the Organization
             const Organization = await tx.organization.create({
@@ -109,6 +122,30 @@ export class OrganizationService {
                 ...data,
                 budgetTarget: data.budgetTarget !== undefined ? data.budgetTarget : undefined,
             },
+        });
+    }
+    /**
+     * Delete an Organization permanently
+     */
+    static async deleteOrganization(organizationId: string) {
+        return await prisma.$transaction(async (tx) => {
+            // Note: In a real multi-tenant app, we might want to cascade delete 
+            // or use soft-delete. Here we do a clean sweep.
+
+            // 1. Delete Members
+            await tx.organizationMember.deleteMany({
+                where: { organizationId }
+            });
+
+            // 2. Delete Invitations
+            await tx.organizationInvitation.deleteMany({
+                where: { organizationId }
+            });
+
+            // 3. Delete the Organization itself
+            return await tx.organization.delete({
+                where: { id: organizationId }
+            });
         });
     }
 }

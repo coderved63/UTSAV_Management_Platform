@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
 import { OrganizationService } from "@/modules/core/organization.service";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -73,4 +74,45 @@ export async function updateOrganizationAction(data: z.infer<typeof UpdateOrgani
     } catch (error: any) {
         return { error: error.message || "Failed to update Organization" };
     }
+}
+
+export async function deleteOrganizationAction(organizationId: string) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return { error: "Authentication required" };
+
+    try {
+        // Strict ADMIN check
+        const member = await prisma.organizationMember.findFirst({
+            where: {
+                organizationId,
+                userId: session.user.id,
+                role: "ADMIN",
+                isArchived: false
+            }
+        });
+
+        if (!member) return { error: "Unauthorized: Only an Admin can delete an Organization" };
+
+        await OrganizationService.deleteOrganization(organizationId);
+
+        revalidatePath("/dashboard", "page");
+        return { success: true };
+    } catch (error: any) {
+        return { error: error.message || "Failed to delete Organization" };
+    }
+}
+
+export async function getOrganizationCountAction() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return 0;
+
+    const count = await prisma.organizationMember.count({
+        where: {
+            userId: session.user.id,
+            role: "ADMIN",
+            isArchived: false
+        }
+    });
+
+    return count;
 }

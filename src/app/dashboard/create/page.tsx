@@ -1,18 +1,31 @@
-"use client";
-
-import { useState } from "react";
-import { createOrganizationAction } from "@/actions/organization.actions";
+import { useState, useEffect } from "react";
+import { createOrganizationAction, getOrganizationCountAction } from "@/actions/organization.actions";
 import { useRouter } from "next/navigation";
-import { Calendar, Users, Sparkles, Building2, CheckCircle2 } from "lucide-react";
+import { Calendar, Users, Sparkles, Building2, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function CreateOrganizationPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [orgCount, setOrgCount] = useState<number>(0);
     const [type, setType] = useState<"FESTIVAL" | "CLUB">("FESTIVAL");
     const router = useRouter();
 
+    useEffect(() => {
+        const fetchCount = async () => {
+            const count = await getOrganizationCountAction();
+            setOrgCount(count);
+        };
+        fetchCount();
+    }, []);
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+
+        if (orgCount >= 3) {
+            alert("You have reached the maximum limit of 3 organizations. Please delete one to create another.");
+            return;
+        }
+
         setIsLoading(true);
 
         const formData = new FormData(e.currentTarget);
@@ -166,18 +179,34 @@ export default function CreateOrganizationPage() {
                                 </div>
                             </div>
 
-                            <button
-                                disabled={isLoading}
-                                className={cn(
-                                    "w-full py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs transition-all shadow-xl",
-                                    type === "FESTIVAL"
-                                        ? "bg-saffron-500 text-white shadow-saffron-500/20 hover:bg-saffron-600"
-                                        : "bg-slate-900 text-white shadow-slate-900/20 hover:bg-slate-800",
-                                    "disabled:opacity-50 disabled:scale-100 hover:scale-[1.02] active:scale-95"
+                            <div className="space-y-4">
+                                {orgCount >= 3 && (
+                                    <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3">
+                                        <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
+                                        <div>
+                                            <p className="text-xs font-bold text-red-900 uppercase tracking-tight">Organization Limit Reached</p>
+                                            <p className="text-[10px] text-red-600 font-medium leading-relaxed">
+                                                You already have 3 organizations. To create a new one, you must delete an existing organization first from its settings.
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
-                            >
-                                {isLoading ? "Deploying Architecture..." : `Initialize ${type}`}
-                            </button>
+
+                                <button
+                                    disabled={isLoading || orgCount >= 3}
+                                    className={cn(
+                                        "w-full py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs transition-all shadow-xl",
+                                        orgCount >= 3
+                                            ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+                                            : type === "FESTIVAL"
+                                                ? "bg-saffron-500 text-white shadow-saffron-500/20 hover:bg-saffron-600"
+                                                : "bg-slate-900 text-white shadow-slate-900/20 hover:bg-slate-800",
+                                        "disabled:opacity-50 disabled:scale-100 hover:scale-[1.02] active:scale-95"
+                                    )}
+                                >
+                                    {isLoading ? "Deploying Architecture..." : orgCount >= 3 ? "Limit Reached (3/3)" : `Initialize ${type}`}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
