@@ -63,10 +63,13 @@ export default async function VolunteersPage({ params }: VolunteersPageProps) {
                 )}
             </div>
 
-            {/* Section A: Volunteer Workload (Admin Only) */}
-            {isAdmin && (
+            {/* Section A: Volunteer Workload (Admin/Treasurer/Committee) */}
+            {(isAdmin || member.role === OrganizationRole.TREASURER) && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <VolunteerListView volunteers={volunteers} />
+                    <VolunteerListView
+                        volunteers={volunteers}
+                        currentRole={member.role}
+                    />
                 </div>
             )}
 

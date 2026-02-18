@@ -206,7 +206,8 @@ export class MemberService {
                 user: {
                     select: {
                         name: true,
-                        image: true
+                        image: true,
+                        phone: true
                     }
                 },
                 _count: {
@@ -228,7 +229,7 @@ export class MemberService {
             email: v.email,
             role: v.role,
             activeTasks: v._count.assignedTasks,
-            // phone would come from User model if we had it, or we could add it to OrganizationMember
+            phone: v.user?.phone,
         }));
     }
 
