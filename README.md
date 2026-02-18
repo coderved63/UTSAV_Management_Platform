@@ -18,7 +18,7 @@ Originally conceived as a *Festival Management System*, UTSAV has evolved into a
 
 ## ✨ Key Features
 
-### � Multi-Tenant Security & Isolation
+###  Multi-Tenant Security & Isolation
 Built from the ground up for scale, UTSAV uses a robust multi-tenant architecture.
 - **Virtual Pavilions:** Create and manage diverse organizations (Festivals, Clubs, Committees).
 - **Hard Limits & Governance:** Enforced limit of 3 organizations per user to maintain ecosystem integrity.
@@ -26,7 +26,7 @@ Built from the ground up for scale, UTSAV uses a robust multi-tenant architectur
 - **Architectural Isolation:** Custom Prisma Extensions (`getTenantPrisma`) ensure data never leaks between organizations.
 - **Role-Based Access Control (RBAC):** Granular permissions for Admins, Treasurers, Members, and Volunteers.
 
-### 💰 High-Integrity Financial Engine
+###  High-Integrity Financial Engine
 A "Zero-Trust" financial system designed for radical transparency.
 - **Double-Entry Operations:** Every expense and donation is tracked with atomic precision.
 - **Approval Workflows:** Expenses require digital sign-off before impacting the ledger.
@@ -44,7 +44,7 @@ A "Zero-Trust" financial system designed for radical transparency.
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 UTSAV follows a modular, service-oriented architecture ensuring separation of concerns and scalability.
 
@@ -88,7 +88,7 @@ graph TD
 
 ---
 
-## � Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+
@@ -173,4 +173,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-*Built with ❤️ by [Team BugLife]*
+*Built with ❤️ by Vedant Mehta*
