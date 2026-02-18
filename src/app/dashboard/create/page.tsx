@@ -23,8 +23,8 @@ export default function CreateOrganizationPage() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        if (orgCount >= 3) {
-            alert("You have reached the maximum limit of 3 organizations. Please delete one to create another.");
+        if (orgCount >= 10) {
+            alert("You have reached the maximum limit of 10 organizations. Please delete one to create another.");
             return;
         }
 
@@ -182,23 +182,23 @@ export default function CreateOrganizationPage() {
                             </div>
 
                             <div className="space-y-4">
-                                {orgCount >= 3 && (
+                                {orgCount >= 10 && (
                                     <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3">
                                         <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="text-xs font-bold text-red-900 uppercase tracking-tight">Organization Limit Reached</p>
                                             <p className="text-[10px] text-red-600 font-medium leading-relaxed">
-                                                You already have 3 organizations. To create a new one, you must delete an existing organization first from its settings.
+                                                You already have 10 organizations. To create a new one, you must delete an existing organization first from its settings.
                                             </p>
                                         </div>
                                     </div>
                                 )}
 
                                 <button
-                                    disabled={isLoading || orgCount >= 3}
+                                    disabled={isLoading || orgCount >= 10}
                                     className={cn(
                                         "w-full py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs transition-all shadow-xl",
-                                        orgCount >= 3
+                                        orgCount >= 10
                                             ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
                                             : type === "FESTIVAL"
                                                 ? "bg-saffron-500 text-white shadow-saffron-500/20 hover:bg-saffron-600"
@@ -206,7 +206,7 @@ export default function CreateOrganizationPage() {
                                         "disabled:opacity-50 disabled:scale-100 hover:scale-[1.02] active:scale-95"
                                     )}
                                 >
-                                    {isLoading ? "Deploying Architecture..." : orgCount >= 3 ? "Limit Reached (3/3)" : `Initialize ${type}`}
+                                    {isLoading ? "Deploying Architecture..." : orgCount >= 10 ? "Limit Reached (10/10)" : `Initialize ${type}`}
                                 </button>
                             </div>
                         </form>

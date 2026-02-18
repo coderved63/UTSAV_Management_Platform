@@ -67,9 +67,28 @@ export async function updateMemberRoleAction(
     memberId: string,
     newRole: OrganizationRole
 ) {
-    await validateAccess(organizationId, [OrganizationRole.ADMIN]);
-
+    const { member: currentMember } = await validateAccess(organizationId, [OrganizationRole.ADMIN]);
     const tenantPrisma = getTenantPrisma(organizationId);
+
+    // Security: Last Admin Protection
+    if (newRole !== OrganizationRole.ADMIN) {
+        const targetMember = await tenantPrisma.organizationMember.findUnique({
+            where: { id: memberId },
+            select: { role: true }
+        });
+
+        if (targetMember?.role === OrganizationRole.ADMIN) {
+            const adminCount = await tenantPrisma.organizationMember.count({
+                where: { role: OrganizationRole.ADMIN, isArchived: false }
+            });
+
+            if (adminCount <= 1) {
+                return {
+                    error: "Critical Security Violation: This organization must have at least one administrator. You cannot change the role of the last admin. Promote another member to Admin first."
+                };
+            }
+        }
+    }
 
     await tenantPrisma.organizationMember.update({
         where: { id: memberId },
@@ -81,14 +100,26 @@ export async function updateMemberRoleAction(
 }
 
 export async function archiveMemberAction(organizationId: string, memberId: string) {
-    const { member } = await validateAccess(organizationId, [OrganizationRole.ADMIN]);
-
-    // Prevent self-archiving if last admin (basic safety)
-    if (member.id === memberId) {
-        return { error: "You cannot remove yourself. Transfer ownership first." };
-    }
-
+    const { member: currentMember } = await validateAccess(organizationId, [OrganizationRole.ADMIN]);
     const tenantPrisma = getTenantPrisma(organizationId);
+
+    // Security: Last Admin Protection
+    const targetMember = await tenantPrisma.organizationMember.findUnique({
+        where: { id: memberId },
+        select: { role: true }
+    });
+
+    if (targetMember?.role === OrganizationRole.ADMIN) {
+        const adminCount = await tenantPrisma.organizationMember.count({
+            where: { role: OrganizationRole.ADMIN, isArchived: false }
+        });
+
+        if (adminCount <= 1) {
+            return {
+                error: "Critical Security Violation: You cannot remove the last administrator. Promote another member to Admin before archiving this account."
+            };
+        }
+    }
 
     await tenantPrisma.organizationMember.update({
         where: { id: memberId },

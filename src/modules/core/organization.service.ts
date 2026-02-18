@@ -74,8 +74,8 @@ export class OrganizationService {
             }
         });
 
-        if (activeCount >= 3) {
-            throw new Error("You have reached the maximum limit of 3 organizations. Please delete one to create another.");
+        if (activeCount >= 10) {
+            throw new Error("You have reached the maximum limit of 10 organizations. Please delete one to create another.");
         }
 
         return await prisma.$transaction(async (tx) => {

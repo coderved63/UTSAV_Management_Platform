@@ -21,7 +21,7 @@ Originally conceived as a *Festival Management System*, UTSAV has evolved into a
 ###  Multi-Tenant Security & Isolation
 Built from the ground up for scale, UTSAV uses a robust multi-tenant architecture.
 - **Virtual Pavilions:** Create and manage diverse organizations (Festivals, Clubs, Committees).
-- **Hard Limits & Governance:** Enforced limit of 3 organizations per user to maintain ecosystem integrity.
+- **Hard Limits & Governance:** Enforced limit of 10 organizations per user to maintain ecosystem integrity.
 - **Organization Deletion:** Full control over the lifecycle with a secure "Danger Zone" for permanent organization deletion.
 - **Architectural Isolation:** Custom Prisma Extensions (`getTenantPrisma`) ensure data never leaks between organizations.
 - **Role-Based Access Control (RBAC):** Granular permissions for Admins, Treasurers, Members, and Volunteers.
