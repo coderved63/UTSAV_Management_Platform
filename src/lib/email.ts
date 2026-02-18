@@ -14,8 +14,9 @@ export async function sendInvitationEmail(
   }
 
   try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'UTSAV <onboarding@resend.dev>';
     const { data, error } = await resend.emails.send({
-      from: 'UTSAV <onboarding@resend.dev>', // change later when domain verified
+      from: fromEmail,
       to: [to],
       subject: `You're invited to join ${organizationName}`,
       html: `

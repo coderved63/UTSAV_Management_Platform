@@ -11,6 +11,7 @@ export class InvitationService {
         role,
         invitedById,
         eventId,
+        skipEmail,
     }: {
         organizationId: string;
         email: string;
