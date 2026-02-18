@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { createOrganizationAction, getOrganizationCountAction } from "@/actions/organization.actions";
 import { useRouter } from "next/navigation";
