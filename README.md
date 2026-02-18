@@ -84,6 +84,24 @@ Instead of expensive physical database-per-tenant isolation, UTSAV utilizes **Lo
 - **The Context Pattern**: Every request is wrapped in an `organizationId` context.
 - **getTenantPrisma**: We extended the Prisma client to automatically inject `WHERE organizationId = X` filters into every query. This ensures that even a developer error cannot leak data between "Pavilions" (Organizations).
 
+#### 🛡️ Tenant Isolation Flow
+```mermaid
+sequenceDiagram
+    participant U as User / Client
+    participant A as Next.js Server Action
+    participant AC as Access Control (validateAccess)
+    participant TP as Tenant Prisma Extension
+    participant DB as PostgreSQL
+
+    U->>A: Request Data (e.g. Get Donations)
+    A->>AC: Validate Auth & Membership
+    AC-->>A: Member found for Org [ID: ABC]
+    A->>TP: Query via getTenantPrisma(ABC)
+    Note over TP: Automatically injects<br/>{ organizationId: 'ABC' }
+    TP->>DB: SELECT * FROM Donation WHERE organizationId = 'ABC'
+    DB-->>U: Isolated Results Returned
+```
+
 ### 2. High-Integrity Financial Engine
 To prevent data corruption during simultaneous donations or expenses, UTSAV implements:
 - **Atomic Transactions**: All financial operations use `prisma.$transaction`. If a donation record fails, the running balance never updates—ensuring "all-or-nothing" consistency.
